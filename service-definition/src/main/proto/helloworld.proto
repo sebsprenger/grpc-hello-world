@@ -4,6 +4,87 @@ option java_multiple_files = true;
 option java_package = "de.sebsprenger.grpc.helloworld";
 option java_outer_classname = "ProtoBufWrapper";
 
+message OrderId {
+  string orderId = 1;
+}
+
+message CustomerId {
+  string customerId = 1;
+}
+
+message ClickAndCollectRetrievalPointId {
+  string clickAndCollectRetrievalPointId = 1;
+}
+
+enum Currency {
+  EUR = 0;
+  CHF = 1;
+}
+
+message Article {
+  string articleId = 1;
+  string name = 2;
+  string description = 3;
+  int32 priceInSmallestUnit = 4;
+  Currency currency = 5;
+}
+
+message InvoiceAddress {
+  string firstname = 1;
+  string lastname = 2;
+  string street = 3;
+  string streetnumber = 4;
+  string zipcode = 5;
+  string city = 6;
+  string state = 7;
+  string country = 8;
+}
+
+message PrivateDeliveryAddress {
+  string firstname = 1;
+  string lastname = 2;
+  string street = 3;
+  string streetnumber = 4;
+  string zipcode = 5;
+  string city = 6;
+  string state = 7;
+  string country = 8;
+}
+
+message ClickAndCollectAddress {
+  CustomerId customerId = 1;
+  ClickAndCollectRetrievalPointId departmentStore = 2;
+}
+
+message PayPal {
+  string payPalId = 1;
+  string otherDetail = 2;
+}
+
+message Visa {
+  string visaId = 1;
+  string somethingElse = 2;
+}
+
+message Comment {
+  string comment = 1;
+}
+
+message Order {
+  OrderId orderId = 1;
+  repeated Article articles = 2;
+  oneof Payment {
+    PayPal payPal = 6;
+    Visa visa = 7;
+  }
+  InvoiceAddress invoiceAddress = 3;
+  oneof DeliveryAddress {
+      PrivateDeliveryAddress privateAddress = 4;
+      ClickAndCollectAddress clickAndCollectAddress = 5;
+  }
+  optional bool giftWrapping = 9;
+}
+
 message HelloRequest {
   string name = 1;
 }
