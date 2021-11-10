@@ -79,8 +79,8 @@ message Order {
   }
   InvoiceAddress invoiceAddress = 3;
   oneof DeliveryAddress {
-      PrivateDeliveryAddress privateAddress = 4;
-      ClickAndCollectAddress clickAndCollectAddress = 5;
+    PrivateDeliveryAddress privateAddress = 4;
+    ClickAndCollectAddress clickAndCollectAddress = 5;
   }
   optional bool giftWrapping = 9;
 }
