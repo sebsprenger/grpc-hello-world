@@ -70,19 +70,23 @@ message Comment {
   string comment = 1;
 }
 
+message OrderDetails {
+  repeated Article articles = 1;
+  oneof Payment {
+    PayPal payPal = 2;
+    Visa visa = 3;
+  }
+  InvoiceAddress invoiceAddress = 4;
+  oneof DeliveryAddress {
+    PrivateDeliveryAddress privateAddress = 5;
+    ClickAndCollectAddress clickAndCollectAddress = 6;
+  }
+  optional bool giftWrapping = 7;
+}
+
 message Order {
   OrderId orderId = 1;
-  repeated Article articles = 2;
-  oneof Payment {
-    PayPal payPal = 6;
-    Visa visa = 7;
-  }
-  InvoiceAddress invoiceAddress = 3;
-  oneof DeliveryAddress {
-    PrivateDeliveryAddress privateAddress = 4;
-    ClickAndCollectAddress clickAndCollectAddress = 5;
-  }
-  optional bool giftWrapping = 9;
+  OrderDetails orderDetails = 2;
 }
 
 message HelloRequest {
@@ -96,4 +100,25 @@ message HelloReply {
 service HelloWorld {
   rpc HelloWorld (HelloRequest) returns (HelloReply) {}
   rpc HelloWithFailures (HelloRequest) returns (HelloReply) {}
+}
+
+message OrderPlacementRequest {
+  OrderDetails orderDetails = 1;
+}
+
+message OrderPlacementResponse {
+  OrderId orderId = 1;
+}
+
+message OrdersRequest {
+  repeated OrderId orderIds = 1;
+}
+
+message OrderResponse {
+  Order order = 1;
+}
+
+service Orders {
+  rpc PlaceOrder (OrderPlacementRequest) returns (OrderPlacementResponse) {}
+  rpc GetOrders (OrdersRequest) returns (stream OrderResponse) {}
 }

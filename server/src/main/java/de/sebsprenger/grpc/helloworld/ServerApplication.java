@@ -2,6 +2,7 @@ package de.sebsprenger.grpc.helloworld;
 
 import de.sebsprenger.grpc.helloworld.service.HelloWorldService;
 import de.sebsprenger.grpc.helloworld.runner.ServerRunner;
+import de.sebsprenger.grpc.helloworld.service.OrderService;
 import io.grpc.ServerBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +20,7 @@ class ServerApplication {
         var server = ServerBuilder
                 .forPort(3030)
                 .addService(new HelloWorldService())
+                .addService(new OrderService())
                 .build();
         return new ServerRunner(server);
     }

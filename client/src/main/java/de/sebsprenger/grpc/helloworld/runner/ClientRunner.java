@@ -2,6 +2,7 @@ package de.sebsprenger.grpc.helloworld.runner;
 
 import com.google.gson.Gson;
 import de.sebsprenger.grpc.helloworld.client.HelloWorldClient;
+import de.sebsprenger.grpc.helloworld.client.OrdersClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.boot.CommandLineRunner;
@@ -15,6 +16,11 @@ class ClientRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        helloWorld();
+        orders();
+    }
+
+    private void helloWorld() throws Exception {
         var channel = createChannel();
         try {
             var client = new HelloWorldClient(channel);
@@ -26,6 +32,20 @@ class ClientRunner implements CommandLineRunner {
 
             Thread.sleep(2000);
             client.helloWithFailures("0xFFFFFF-Failure-Master");
+        } finally {
+            channel.awaitTermination(5, TimeUnit.SECONDS);
+        }
+    }
+
+    private void orders() throws Exception {
+        var channel = createChannel();
+        try {
+            var client = new OrdersClient(channel);
+
+            client.placeOrderSync();
+
+            Thread.sleep(2000);
+            client.placeOrderAsync();
         } finally {
             channel.awaitTermination(5, TimeUnit.SECONDS);
         }

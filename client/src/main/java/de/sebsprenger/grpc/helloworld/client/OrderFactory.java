@@ -1,13 +1,18 @@
-package de.sebsprenger.grpc.helloworld;
+package de.sebsprenger.grpc.helloworld.client;
 
-import org.junit.jupiter.api.Test;
+import de.sebsprenger.grpc.helloworld.Article;
+import de.sebsprenger.grpc.helloworld.ClickAndCollectAddress;
+import de.sebsprenger.grpc.helloworld.ClickAndCollectRetrievalPointId;
+import de.sebsprenger.grpc.helloworld.Currency;
+import de.sebsprenger.grpc.helloworld.CustomerId;
+import de.sebsprenger.grpc.helloworld.InvoiceAddress;
+import de.sebsprenger.grpc.helloworld.OrderDetails;
+import de.sebsprenger.grpc.helloworld.PayPal;
+import de.sebsprenger.grpc.helloworld.PrivateDeliveryAddress;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class OrderFactory {
 
-class OrderTest {
-
-    @Test
-    void testOrder() {
+    static OrderDetails order1() {
         var article1 = Article.newBuilder()
                 .setArticleId("1234")
                 .setName("T-Shirt")
@@ -53,7 +58,7 @@ class OrderTest {
         var deliveryAddress2 = ClickAndCollectAddress.newBuilder()
                 .setCustomerId(CustomerId.newBuilder().setCustomerId("123"))
                 .setDepartmentStore(ClickAndCollectRetrievalPointId.newBuilder()
-                .setClickAndCollectRetrievalPointId("10"))
+                        .setClickAndCollectRetrievalPointId("10"))
                 .build();
 
         var orderDetails = OrderDetails.newBuilder()
@@ -65,27 +70,6 @@ class OrderTest {
                 .setClickAndCollectAddress(deliveryAddress2)
                 .build();
 
-        var underTest = Order.newBuilder()
-                .setOrderId(OrderId.newBuilder().setOrderId("123456789"))
-                .setOrderDetails(orderDetails)
-                .build();
-
-
-        assertThat(underTest.getOrderDetails().getPayPal().getPayPalId())
-                .isEqualTo("987");
-
-        assertThat(underTest.getOrderDetails().getDeliveryAddressCase())
-                .isEqualTo(OrderDetails.DeliveryAddressCase.CLICKANDCOLLECTADDRESS);
-
-        assertThat(underTest.getOrderDetails().getPrivateAddress())
-                .isEqualTo(underTest.getOrderDetails().getPrivateAddress().getDefaultInstanceForType());
-
-        assertThat(underTest.getOrderDetails().getClickAndCollectAddress())
-                .isEqualTo(deliveryAddress2);
-
-        assertThat(underTest.getOrderDetails().hasGiftWrapping())
-                .isFalse();
-        assertThat(underTest.getOrderDetails().getGiftWrapping())
-                .isFalse();
+        return orderDetails;
     }
 }
