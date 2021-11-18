@@ -21,9 +21,31 @@ public class HelloWorldClient {
         this.async = HelloWorldGrpc.newStub(channel);
     }
 
+    public void sayHello(String name) {
+        log.info("--- sayHello ---");
+        log.info("sayHello sync: Preparing request");
+
+        HelloRequest request = HelloRequest.newBuilder()
+                .setName(name)
+                .build();
+        HelloReply response;
+
+        try {
+            log.info("sayHello sync: Sending request to server");
+            response = sync.withDeadlineAfter(5, TimeUnit.SECONDS)
+                    .helloWorld(request);
+            log.info("sayHello sync: after stub call");
+        } catch (StatusRuntimeException e) {
+            log.error("sayHello sync: RPC failed: {}", e.getStatus());
+            return;
+        }
+
+        log.info("sayHello sync: Response: {}", response.getMessage());
+    }
+
     public void sayAsyncHello(String name) {
-        log.info("--- sayAsyncHello ---");
-        log.info("a: Preparing request");
+        log.info("--- sayHello async ---");
+        log.info("sayHello async: Preparing request");
 
         HelloRequest request = HelloRequest.newBuilder()
                 .setName(name)
@@ -32,51 +54,29 @@ public class HelloWorldClient {
         var responseHandler = new StreamObserver<HelloReply>() {
             @Override
             public void onNext(HelloReply response) {
-                log.info("a: Response: {}", response.getMessage());
+                log.info("sayHello async: Response: {}", response.getMessage());
             }
 
             @Override
             public void onError(Throwable throwable) {
-                log.error("a: Failure!: {}", throwable.getMessage());
+                log.error("sayHello async: Failure!: {}", throwable.getMessage());
             }
 
             @Override
             public void onCompleted() {
-                log.info("a: all set");
+                log.info("sayHello async: all set");
             }
         };
 
-        log.info("a: Sending request to server");
+        log.info("sayHello async: Sending request to server");
         async.withDeadlineAfter(2, TimeUnit.SECONDS)
                 .helloWorld(request, responseHandler);
-        log.info("a: after stub call");
-    }
-
-    public void sayHello(String name) {
-        log.info("--- sayHello ---");
-        log.info("s: Preparing request");
-
-        HelloRequest request = HelloRequest.newBuilder()
-                .setName(name)
-                .build();
-        HelloReply response;
-
-        try {
-            log.info("s: Sending request to server");
-            response = sync.withDeadlineAfter(5, TimeUnit.SECONDS)
-                    .helloWorld(request);
-            log.info("s: after stub call");
-        } catch (StatusRuntimeException e) {
-            log.error("s: RPC failed: {}", e.getStatus());
-            return;
-        }
-
-        log.info("s: Response: {}", response.getMessage());
+        log.info("sayHello async: after stub call");
     }
 
     public void helloWithFailures(String name) {
         log.info("--- helloWithFailures ---");
-        log.info("f: Preparing request");
+        log.info("helloWithFailures: Preparing request");
 
         HelloRequest request = HelloRequest.newBuilder()
                 .setName(name)
@@ -84,21 +84,21 @@ public class HelloWorldClient {
         HelloReply response;
 
         try {
-            log.info("f: Sending request to server");
+            log.info("helloWithFailures: Sending request to server");
             response = sync.withDeadlineAfter(10, TimeUnit.SECONDS)
                     .helloWithFailures(request);
-            log.info("f: after stub call");
+            log.info("helloWithFailures: after stub call");
         } catch (StatusRuntimeException e) {
-            log.error("f: RPC failed: {}", e.getStatus());
+            log.error("helloWithFailures: RPC failed: {}", e.getStatus());
             return;
         }
 
-        log.info("f: Response: {}", response.getMessage());
+        log.info("helloWithFailures: Response: {}", response.getMessage());
     }
 
     public void helloStream(String name) {
         log.info("--- helloStream ---");
-        log.info("stream: Preparing request");
+        log.info("helloStream: Preparing request");
 
         HelloRequest request = HelloRequest.newBuilder()
                 .setName(name)
@@ -107,23 +107,23 @@ public class HelloWorldClient {
         var responseHandler = new StreamObserver<HelloReply>() {
             @Override
             public void onNext(HelloReply response) {
-                log.info("stream: Response: {}", response.getMessage());
+                log.info("helloStream: Response: {}", response.getMessage());
             }
 
             @Override
             public void onError(Throwable throwable) {
-                log.error("stream: Failure!: {}", throwable.getMessage());
+                log.error("helloStream: Failure!: {}", throwable.getMessage());
             }
 
             @Override
             public void onCompleted() {
-                log.info("stream: all set");
+                log.info("helloStream: all set");
             }
         };
 
-        log.info("stream: Sending request to server");
+        log.info("helloStream: Sending request to server");
         async.withDeadlineAfter(10, TimeUnit.SECONDS)
                 .helloStream(request, responseHandler);
-        log.info("stream: after stub call");
+        log.info("helloStream: after stub call");
     }
 }

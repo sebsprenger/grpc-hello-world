@@ -25,8 +25,8 @@ class ClientRunner implements CommandLineRunner {
         try {
             var client = new HelloWorldClient(channel);
 
-            client.sayAsyncHello("My band is called ASYNC");
             client.sayHello("I am Synchronitor");
+            client.sayAsyncHello("My band is called ASYNC");
             client.helloWithFailures("0xFFFFFF-Failure");
             client.helloStream("Around the world lalalala");
         } finally {
