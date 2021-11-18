@@ -1,6 +1,5 @@
 package de.sebsprenger.grpc.helloworld.service;
 
-import de.sebsprenger.grpc.helloworld.HelloReply;
 import de.sebsprenger.grpc.helloworld.Order;
 import de.sebsprenger.grpc.helloworld.OrderId;
 import de.sebsprenger.grpc.helloworld.OrderPlacementRequest;
@@ -8,7 +7,6 @@ import de.sebsprenger.grpc.helloworld.OrderPlacementResponse;
 import de.sebsprenger.grpc.helloworld.OrderResponse;
 import de.sebsprenger.grpc.helloworld.OrdersGrpc;
 import de.sebsprenger.grpc.helloworld.OrdersRequest;
-import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;

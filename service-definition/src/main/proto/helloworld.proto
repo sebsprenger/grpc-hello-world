@@ -100,6 +100,7 @@ message HelloReply {
 service HelloWorld {
   rpc HelloWorld (HelloRequest) returns (HelloReply) {}
   rpc HelloWithFailures (HelloRequest) returns (HelloReply) {}
+  rpc HelloStream (HelloRequest) returns (stream HelloReply) {}
 }
 
 message OrderPlacementRequest {

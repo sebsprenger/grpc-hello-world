@@ -1,16 +1,18 @@
 package de.sebsprenger.grpc.helloworld.client;
 
-import de.sebsprenger.grpc.helloworld.HelloReply;
-import de.sebsprenger.grpc.helloworld.HelloRequest;
-import de.sebsprenger.grpc.helloworld.OrderDetails;
+import de.sebsprenger.grpc.helloworld.OrderId;
 import de.sebsprenger.grpc.helloworld.OrderPlacementRequest;
 import de.sebsprenger.grpc.helloworld.OrderPlacementResponse;
+import de.sebsprenger.grpc.helloworld.OrderResponse;
 import de.sebsprenger.grpc.helloworld.OrdersGrpc;
+import de.sebsprenger.grpc.helloworld.OrdersRequest;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -18,6 +20,8 @@ public class OrdersClient {
 
     private final OrdersGrpc.OrdersBlockingStub sync;
     private final OrdersGrpc.OrdersStub async;
+
+    private final List<OrderId> placedOrders = new ArrayList<>();
 
     public OrdersClient(Channel channel) {
         this.sync = OrdersGrpc.newBlockingStub(channel);
@@ -36,6 +40,7 @@ public class OrdersClient {
             @Override
             public void onNext(OrderPlacementResponse response) {
                 log.info("order placement async: Response: {}", response.getOrderId());
+                placedOrders.add(response.getOrderId());
             }
 
             @Override
@@ -52,7 +57,7 @@ public class OrdersClient {
         log.info("order placement async: Sending request to server");
         async.withDeadlineAfter(2, TimeUnit.SECONDS)
                 .placeOrder(request, responseHandler);
-        log.info("order placement async: after function call");
+        log.info("order placement async: after stub call");
     }
 
     public void placeOrderSync() {
@@ -68,12 +73,44 @@ public class OrdersClient {
             log.info("order placement sync: Sending request to server");
             response = sync.withDeadlineAfter(5, TimeUnit.SECONDS)
                     .placeOrder(request);
-            log.info("order placement sync: after function call");
+            placedOrders.add(response.getOrderId());
+            log.info("order placement sync: after stub call");
         } catch (StatusRuntimeException e) {
             log.warn("order placement sync: RPC failed: {}", e.getStatus());
             return;
         }
 
         log.info("order placement sync: Response: {}", response.getOrderId());
+    }
+
+    public void getOrders() {
+        log.info("--- get orders stream ---");
+        log.info("get orders stream: Preparing request");
+
+        var request = OrdersRequest.newBuilder()
+                .addAllOrderIds(placedOrders)
+                .build();
+
+        var responseHandler = new StreamObserver<OrderResponse>() {
+            @Override
+            public void onNext(OrderResponse response) {
+                log.info("get orders stream: Response: {}", response.getOrder());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                log.info("get orders stream: Failure!: {}", throwable.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+                log.info("get orders stream: all set");
+            }
+        };
+
+        log.info("order placement async: Sending request to server");
+        async.withDeadlineAfter(5, TimeUnit.SECONDS)
+                .getOrders(request, responseHandler);
+        log.info("order placement async: after stub call");
     }
 }

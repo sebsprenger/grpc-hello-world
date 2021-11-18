@@ -37,7 +37,7 @@ public class HelloWorldClient {
 
             @Override
             public void onError(Throwable throwable) {
-                log.info("a: Failure!: {}", throwable.getMessage());
+                log.error("a: Failure!: {}", throwable.getMessage());
             }
 
             @Override
@@ -49,7 +49,7 @@ public class HelloWorldClient {
         log.info("a: Sending request to server");
         async.withDeadlineAfter(2, TimeUnit.SECONDS)
                 .helloWorld(request, responseHandler);
-        log.info("a: after function call");
+        log.info("a: after stub call");
     }
 
     public void sayHello(String name) {
@@ -65,9 +65,9 @@ public class HelloWorldClient {
             log.info("s: Sending request to server");
             response = sync.withDeadlineAfter(5, TimeUnit.SECONDS)
                     .helloWorld(request);
-            log.info("s: after function call");
+            log.info("s: after stub call");
         } catch (StatusRuntimeException e) {
-            log.warn("s: RPC failed: {}", e.getStatus());
+            log.error("s: RPC failed: {}", e.getStatus());
             return;
         }
 
@@ -87,12 +87,43 @@ public class HelloWorldClient {
             log.info("f: Sending request to server");
             response = sync.withDeadlineAfter(10, TimeUnit.SECONDS)
                     .helloWithFailures(request);
-            log.info("f: after function call");
+            log.info("f: after stub call");
         } catch (StatusRuntimeException e) {
-            log.warn("f: RPC failed: {}", e.getStatus());
+            log.error("f: RPC failed: {}", e.getStatus());
             return;
         }
 
         log.info("f: Response: {}", response.getMessage());
+    }
+
+    public void helloStream(String name) {
+        log.info("--- helloStream ---");
+        log.info("stream: Preparing request");
+
+        HelloRequest request = HelloRequest.newBuilder()
+                .setName(name)
+                .build();
+
+        var responseHandler = new StreamObserver<HelloReply>() {
+            @Override
+            public void onNext(HelloReply response) {
+                log.info("stream: Response: {}", response.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                log.error("stream: Failure!: {}", throwable.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+                log.info("stream: all set");
+            }
+        };
+
+        log.info("stream: Sending request to server");
+        async.withDeadlineAfter(10, TimeUnit.SECONDS)
+                .helloStream(request, responseHandler);
+        log.info("stream: after stub call");
     }
 }

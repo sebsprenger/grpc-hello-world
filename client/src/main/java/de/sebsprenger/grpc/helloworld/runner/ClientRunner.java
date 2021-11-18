@@ -26,12 +26,9 @@ class ClientRunner implements CommandLineRunner {
             var client = new HelloWorldClient(channel);
 
             client.sayAsyncHello("My band is called ASYNC");
-
-            Thread.sleep(2000);
             client.sayHello("I am Synchronitor");
-
-            Thread.sleep(2000);
-            client.helloWithFailures("0xFFFFFF-Failure-Master");
+            client.helloWithFailures("0xFFFFFF-Failure");
+            client.helloStream("Around the world lalalala");
         } finally {
             channel.awaitTermination(5, TimeUnit.SECONDS);
         }
@@ -43,9 +40,9 @@ class ClientRunner implements CommandLineRunner {
             var client = new OrdersClient(channel);
 
             client.placeOrderSync();
-
-            Thread.sleep(2000);
             client.placeOrderAsync();
+            Thread.sleep(2000);
+            client.getOrders();
         } finally {
             channel.awaitTermination(5, TimeUnit.SECONDS);
         }
