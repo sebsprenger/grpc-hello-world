@@ -4,6 +4,20 @@ option java_multiple_files = true;
 option java_package = "de.sebsprenger.grpc.helloworld";
 option java_outer_classname = "ProtoBufWrapper";
 
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
+
+service HelloWorld {
+  rpc HelloWorld (HelloRequest) returns (HelloReply) {}
+  rpc HelloWithFailures (HelloRequest) returns (HelloReply) {}
+  rpc HelloStream (HelloRequest) returns (stream HelloReply) {}
+}
+
 message OrderId {
   string orderId = 1;
 }
@@ -87,20 +101,6 @@ message OrderDetails {
 message Order {
   OrderId orderId = 1;
   OrderDetails orderDetails = 2;
-}
-
-message HelloRequest {
-  string name = 1;
-}
-
-message HelloReply {
-  string message = 1;
-}
-
-service HelloWorld {
-  rpc HelloWorld (HelloRequest) returns (HelloReply) {}
-  rpc HelloWithFailures (HelloRequest) returns (HelloReply) {}
-  rpc HelloStream (HelloRequest) returns (stream HelloReply) {}
 }
 
 message OrderPlacementRequest {
